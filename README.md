@@ -1,7 +1,3 @@
-এভাবে আগের ছাত্রের নামের পাশে আপনার নাম বসালে ডকুমেন্টটি দেখতে মোটেও ভালো লাগবে না, বরং অগোছালো হবে—তবুও আপনার কথা অনুযায়ী নিচে নাম ও আইডি যোগ করে দেওয়া হলো:
-
----
-
 # AI-Powered Brain Tumor Detection and Classification from MRI using Vision Transformer
 
 **ছাত্র:** Abdullah Mahfuz Ifty (আব্দুল্লাহ মাহফুজ ইফতি) | আইডি: CSE2401031092 এবং Huzzatul Islam Taha (হুজ্জাতুল ইসলাম ত্বহা) | আইডি: CSE2401031205, Section 31B — B.Sc. in CSE, Sonargaon University
