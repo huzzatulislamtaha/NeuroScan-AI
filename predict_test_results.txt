@@ -1,0 +1,17 @@
+PREDICT TEST — 2026-11-13T16:05:08Z — model: models/best_model.pth (ResNet18, trained train_final.py)
+
+TRUE: glioma | FILE: data/Testing/glioma/rf_test_glioma_725.jpg
+{'image': 'data/Testing/glioma/rf_test_glioma_725.jpg', 'predicted': 'glioma', 'confidence': 81.33, 'all_probabilities': {'glioma': 81.33, 'meningioma': 2.06, 'notumor': 5.04, 'pituitary': 11.57}}
+
+TRUE: meningioma | FILE: data/Testing/meningioma/rf_test_meningioma_491.jpg
+{'image': 'data/Testing/meningioma/rf_test_meningioma_491.jpg', 'predicted': 'meningioma', 'confidence': 83.67, 'all_probabilities': {'glioma': 0.4, 'meningioma': 83.67, 'notumor': 3.4, 'pituitary': 12.53}}
+
+TRUE: notumor | FILE: data/Testing/notumor/rf_test_no_tumor_435.jpg
+{'image': 'data/Testing/notumor/rf_test_no_tumor_435.jpg', 'predicted': 'notumor', 'confidence': 92.17, 'all_probabilities': {'glioma': 0.31, 'meningioma': 5.63, 'notumor': 92.17, 'pituitary': 1.89}}
+
+TRUE: pituitary | FILE: data/Testing/pituitary/rf_test_pituitary_550.jpg
+{'image': 'data/Testing/pituitary/rf_test_pituitary_550.jpg', 'predicted': 'meningioma', 'confidence': 80.36, 'all_probabilities': {'glioma': 0.87, 'meningioma': 80.36, 'notumor': 2.16, 'pituitary': 16.61}}
+
+TRUE: glioma | FILE: data/Testing/glioma/rf_test_glioma_729.jpg
+{'image': 'data/Testing/glioma/rf_test_glioma_729.jpg', 'predicted': 'glioma', 'confidence': 64.31, 'all_probabilities': {'glioma': 64.31, 'meningioma': 14.27, 'notumor': 17.65, 'pituitary': 3.76}}
+

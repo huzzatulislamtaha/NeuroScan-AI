@@ -1,0 +1,768 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0D3A38">
+
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="NeuroScan AI">
+
+<link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+<link rel="icon" href="{{ url_for('static', filename='icon-192.png') }}">
+<link rel="apple-touch-icon" href="{{ url_for('static', filename='icon-192.png') }}">
+
+<title>NeuroScan AI — Brain Tumor Detection</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+/* Upload Section */
+.upload-card {
+    overflow: hidden;
+}
+
+.upload-form {
+    width: 100%;
+}
+
+.dropzone {
+    width: 100%;
+    min-height: 220px;
+    border: 2px dashed #7da5a0;
+    border-radius: 16px;
+    background: #f4f9f8;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 25px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.25s ease;
+    box-sizing: border-box;
+}
+
+.dropzone:hover,
+.dropzone.drag-over {
+    border-color: #0D766E;
+    background: #e8f5f2;
+}
+
+.drop-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: #dcefeb;
+    color: #0D766E;
+    font-size: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dropzone strong {
+    color: #0D3A38;
+    font-size: 17px;
+}
+
+.drop-sub {
+    font-size: 13px;
+    color: #71817f;
+}
+
+/* Hide original input */
+#file {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+/* Image Preview */
+.preview-container {
+    display: none;
+    margin-top: 20px;
+    padding: 18px;
+    border: 1px solid #cce5dc;
+    border-radius: 14px;
+    background: #f3faf7;
+}
+
+.preview-container.show {
+    display: block;
+}
+
+.preview-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.preview-heading strong {
+    color: #08745d;
+    font-size: 15px;
+}
+
+.preview-status {
+    background: #d9f5e7;
+    color: #08774e;
+    padding: 6px 11px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.preview-image-wrapper {
+    width: 100%;
+    min-height: 200px;
+    background: #102522;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#imagePreview {
+    display: block;
+    max-width: 100%;
+    max-height: 380px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+.file-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 13px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: #50645f;
+    overflow-wrap: anywhere;
+}
+
+.file-details span {
+    min-width: 0;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.preview-actions button {
+    padding: 9px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    border: 1px solid #0D766E;
+    background: white;
+    color: #0D766E;
+}
+
+.preview-actions button:hover {
+    background: #e4f3ef;
+}
+
+.btn-primary:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    filter: grayscale(0.4);
+}
+
+.upload-message {
+    display: none;
+    padding: 12px;
+    margin-top: 12px;
+    border-radius: 8px;
+    background: #fff0ed;
+    color: #b42318;
+    font-size: 13px;
+}
+
+.upload-message.show {
+    display: block;
+}
+
+.heatmap {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+}
+
+@media (max-width: 600px) {
+    .dropzone {
+        min-height: 190px;
+        padding: 18px;
+    }
+
+    .preview-image-wrapper {
+        min-height: 160px;
+    }
+
+    #imagePreview {
+        max-height: 280px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="topbar-inner">
+
+        <div class="brand">
+            <span class="brand-mark">NS</span>
+            <div>
+                <strong>NeuroScan AI</strong>
+                <span>Brain Tumor Detection from MRI</span>
+            </div>
+        </div>
+
+        <div class="badges">
+            <span class="badge">ResNet18 Model</span>
+            <span class="badge badge-accent">AI Analysis</span>
+        </div>
+
+    </div>
+</header>
+
+
+<main class="container">
+
+    <!-- Hero Section -->
+    <section class="hero">
+
+        <p class="eyebrow">
+            AI-Powered Medical Image Analysis · Final Year Project
+        </p>
+
+        <h1>Detect brain tumors from MRI in seconds.</h1>
+
+        <p class="lead">
+            Upload an MRI scan and the model classifies it as
+            Glioma, Meningioma, Pituitary Tumor, or No Tumor
+            with prediction confidence and an optional Grad-CAM heatmap.
+        </p>
+
+        <div class="stats">
+            <div class="stat">
+                <strong>4</strong>
+                <span>Classes</span>
+            </div>
+
+            <div class="stat">
+                <strong>AI</strong>
+                <span>ResNet18 Model</span>
+            </div>
+
+            <div class="stat">
+                <strong>MRI</strong>
+                <span>Image Analysis</span>
+            </div>
+
+            <div class="stat">
+                <strong>24/7</strong>
+                <span>Local Access</span>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- Model Warning -->
+    {% if not ready %}
+    <p class="warn">
+        ResNet18 model file not found.
+        Please check models/best_model_resnet18.pth.
+    </p>
+    {% endif %}
+
+
+    <!-- Error Message -->
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+
+    <!-- Upload Section -->
+    <section class="card upload-card">
+
+        <h2>Upload MRI Scan</h2>
+
+        <p class="muted">
+            Select an MRI image from your device or take a photo
+            using your mobile camera.
+        </p>
+
+        <form
+            id="uploadForm"
+            class="upload-form"
+            action="/predict"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+            <!-- Upload Dropzone -->
+            <label class="dropzone" id="dropzone" for="file">
+
+                <div class="drop-icon" id="uploadIcon">+</div>
+
+                <strong id="uploadTitle">
+                    Choose an MRI image
+                </strong>
+
+                <span id="uploadDescription">
+                    Click here or drag & drop your image
+                </span>
+
+                <span class="drop-sub">
+                    JPG, JPEG, PNG · Maximum 16 MB
+                </span>
+
+            </label>
+
+
+            <!-- Actual File Input -->
+            <input
+                type="file"
+                id="file"
+                name="file"
+                accept="image/jpeg,image/png,image/jpg"
+                capture="environment"
+                required
+            >
+
+
+            <!-- Upload Error -->
+            <div class="upload-message" id="uploadMessage"></div>
+
+
+            <!-- Image Preview -->
+            <div class="preview-container" id="previewContainer">
+
+                <div class="preview-heading">
+
+                    <strong>✓ Image Selected Successfully</strong>
+
+                    <span class="preview-status">
+                        Ready to Analyze
+                    </span>
+
+                </div>
+
+
+                <div class="preview-image-wrapper">
+
+                    <img
+                        id="imagePreview"
+                        src=""
+                        alt="Selected MRI Preview"
+                    >
+
+                </div>
+
+
+                <div class="file-details">
+
+                    <span id="fileName">
+                        No image selected
+                    </span>
+
+                    <span id="fileSize"></span>
+
+                </div>
+
+
+                <div class="preview-actions">
+
+                    <button type="button" id="changeImage">
+                        Change Image
+                    </button>
+
+                    <button type="button" id="removeImage">
+                        Remove Image
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Analyze Button -->
+            <button
+                type="submit"
+                class="btn-primary"
+                id="analyzeButton"
+                disabled
+            >
+                Analyze MRI
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- Prediction Result -->
+    {% if result %}
+
+    <section class="card result">
+
+        <p class="eyebrow">Analysis Result</p>
+
+        <h2>{{ result.predicted }}</h2>
+
+        <p class="big">
+            Confidence:
+            <b>{{ result.confidence }}%</b>
+        </p>
+
+
+        <div class="bars">
+
+            {% for name, prob in result.all_probabilities.items() %}
+
+            <div class="bar-row">
+
+                <span>{{ name }}</span>
+
+                <div class="bar">
+                    <div
+                        class="bar-fill"
+                        style="width: {{ prob }}%"
+                    ></div>
+                </div>
+
+                <span>{{ prob }}%</span>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        {% if heatmap %}
+
+        <h3>Grad-CAM Heatmap</h3>
+
+        <p class="muted">
+            Highlighted areas indicate where the model focused.
+            Red indicates higher activation.
+        </p>
+
+        <img
+            src="{{ url_for('static', filename=heatmap) }}?v={{ range(1, 999999) | random }}"
+            alt="Grad-CAM Heatmap"
+            class="heatmap"
+        >
+
+        {% endif %}
+
+
+        <p>
+            <a class="btn" href="/report">
+                Download PDF Report
+            </a>
+        </p>
+
+    </section>
+
+    {% endif %}
+
+
+    <!-- How it works -->
+    <section class="how">
+
+        <h2>How it works</h2>
+
+        <ol>
+
+            <li>
+                <strong>Upload</strong> —
+                Select an MRI scan from your device or camera.
+            </li>
+
+            <li>
+                <strong>Analyze</strong> —
+                ResNet18 classifies the image into one of four classes.
+            </li>
+
+            <li>
+                <strong>Review</strong> —
+                Check prediction, confidence scores, and optional heatmap.
+            </li>
+
+        </ol>
+
+    </section>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <p>
+            <small>
+                This is an assistive academic project only.
+                It does not replace a doctor or qualified radiologist.
+            </small>
+        </p>
+
+        <p>
+            <small>
+                Classes: Glioma · Meningioma · Pituitary Tumor · No Tumor
+                · Model: ResNet18
+            </small>
+        </p>
+
+    </footer>
+
+</main>
+
+
+<!-- Image Preview JavaScript -->
+<script>
+
+const fileInput = document.getElementById("file");
+const dropzone = document.getElementById("dropzone");
+
+const previewContainer = document.getElementById("previewContainer");
+const imagePreview = document.getElementById("imagePreview");
+
+const fileName = document.getElementById("fileName");
+const fileSize = document.getElementById("fileSize");
+
+const uploadIcon = document.getElementById("uploadIcon");
+const uploadTitle = document.getElementById("uploadTitle");
+const uploadDescription = document.getElementById("uploadDescription");
+
+const analyzeButton = document.getElementById("analyzeButton");
+
+const changeImage = document.getElementById("changeImage");
+const removeImage = document.getElementById("removeImage");
+
+const uploadMessage = document.getElementById("uploadMessage");
+const uploadForm = document.getElementById("uploadForm");
+
+let currentImageURL = null;
+
+const MAX_SIZE = 16 * 1024 * 1024;
+
+
+function showMessage(message) {
+    uploadMessage.textContent = message;
+    uploadMessage.classList.add("show");
+}
+
+
+function hideMessage() {
+    uploadMessage.textContent = "";
+    uploadMessage.classList.remove("show");
+}
+
+
+function resetPreview() {
+
+    if (currentImageURL) {
+        URL.revokeObjectURL(currentImageURL);
+        currentImageURL = null;
+    }
+
+    fileInput.value = "";
+
+    imagePreview.removeAttribute("src");
+
+    previewContainer.classList.remove("show");
+
+    fileName.textContent = "";
+    fileSize.textContent = "";
+
+    uploadIcon.textContent = "+";
+    uploadTitle.textContent = "Choose an MRI image";
+    uploadDescription.textContent =
+        "Click here or drag & drop your image";
+
+    analyzeButton.disabled = true;
+
+    hideMessage();
+}
+
+
+function displayPreview(file) {
+
+    hideMessage();
+
+    if (!file) {
+        resetPreview();
+        return;
+    }
+
+    const validTypes = [
+        "image/jpeg",
+        "image/png"
+    ];
+
+    if (!validTypes.includes(file.type)) {
+
+        resetPreview();
+        showMessage("Please select a JPG or PNG image.");
+
+        return;
+    }
+
+    if (file.size > MAX_SIZE) {
+
+        resetPreview();
+        showMessage("Image size must be less than 16 MB.");
+
+        return;
+    }
+
+    if (file.size === 0) {
+
+        resetPreview();
+        showMessage("Selected image is empty.");
+
+        return;
+    }
+
+
+    if (currentImageURL) {
+        URL.revokeObjectURL(currentImageURL);
+    }
+
+    currentImageURL = URL.createObjectURL(file);
+
+    imagePreview.onload = function () {
+
+        previewContainer.classList.add("show");
+
+        fileName.textContent = "📁 " + file.name;
+
+        fileSize.textContent =
+            (file.size / (1024 * 1024)).toFixed(2) + " MB";
+
+        uploadIcon.textContent = "✓";
+
+        uploadTitle.textContent = "MRI Image Selected";
+
+        uploadDescription.textContent =
+            "Your image preview is displayed below.";
+
+        analyzeButton.disabled = false;
+    };
+
+
+    imagePreview.onerror = function () {
+
+        resetPreview();
+        showMessage("Unable to display this image. Please try another file.");
+
+    };
+
+
+    imagePreview.src = currentImageURL;
+
+}
+
+
+// File selection
+fileInput.addEventListener("change", function () {
+
+    displayPreview(this.files[0]);
+
+});
+
+
+// Change image
+changeImage.addEventListener("click", function () {
+
+    fileInput.click();
+
+});
+
+
+// Remove image
+removeImage.addEventListener("click", function () {
+
+    resetPreview();
+
+});
+
+
+// Drag and Drop
+dropzone.addEventListener("dragover", function (event) {
+
+    event.preventDefault();
+
+    dropzone.classList.add("drag-over");
+
+});
+
+
+dropzone.addEventListener("dragleave", function () {
+
+    dropzone.classList.remove("drag-over");
+
+});
+
+
+dropzone.addEventListener("drop", function (event) {
+
+    event.preventDefault();
+
+    dropzone.classList.remove("drag-over");
+
+    const file = event.dataTransfer.files[0];
+
+    if (!file) return;
+
+    const transfer = new DataTransfer();
+
+    transfer.items.add(file);
+
+    fileInput.files = transfer.files;
+
+    displayPreview(file);
+
+});
+
+
+// Prevent submission without image
+uploadForm.addEventListener("submit", function (event) {
+
+    if (!fileInput.files.length || analyzeButton.disabled) {
+
+        event.preventDefault();
+
+        showMessage("Please select an MRI image first.");
+
+        return;
+    }
+
+    analyzeButton.disabled = true;
+    analyzeButton.textContent = "Analyzing MRI...";
+
+});
+
+
+</script>
+
+</body>
+</html>
